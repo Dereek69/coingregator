@@ -57,7 +57,7 @@ else:
 if "CONCURRENT_REQUESTS" in os.environ:
     CONCURRENT_REQUESTS = int(os.environ["CONCURRENT_REQUESTS"])
 else:
-    CONCURRENT_REQUESTS = 10
+    CONCURRENT_REQUESTS = 8
 
 
 if "INTER_REQUEST_TIME" in os.environ:
@@ -162,7 +162,7 @@ def main(r):
 
 log_queue = queue.Queue()
 queue_handler = QueueHandler(log_queue)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 logging.getLogger().addHandler(queue_handler)
 stream_handler = StreamHandler(sys.stdout)
 queue_listener = QueueListener(log_queue, stream_handler)
