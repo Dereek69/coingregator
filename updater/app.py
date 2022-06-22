@@ -11,6 +11,7 @@ import logging
 from logging.handlers import QueueListener, QueueHandler
 from logging import StreamHandler
 import sys
+from json import dumps as dumpsJSON
 
 
 SECRET_FILE = "/run/secrets/keys"
@@ -65,21 +66,28 @@ else:
     INTER_REQUEST_TIME = 3
 
 
-async def _coinglassRequests(rtype, symbol):
-    """
-    Make a request to the coinglass api.
+async def _coinglass_unpack(response, symbol):
+    r = await response.json()
+    try:
+        return dumpsJSON({"symbol": symbol, "data": r["data"]})
+    except KeyError:
+        body = await response.text()
+        logging.getLogger(__name__).error(
+            "request for {symbol} returned {body}".format(symbol=symbol, body=body)
+        )
+        return body
 
-    The type of the request (funding_rates_u, funding_rates_c or openInterest)
-    is given by RTYPE and the coin to fetch is given by SYMBOL
-    """
+
+async def _coinglassRequests(rtype, symbol):
     headers = {"coinglassSecret": SECRET}
     async with aiohttp.ClientSession() as session:
         url = COINGLASS_DICT[rtype].format(symbol=symbol)
         async with session.get(url, headers=headers) as response:
             if response.status == 200:
                 logging.getLogger(__name__).info(
-                    "Coinglass request made for {url}".format(url=url))
-                return (symbol, await response.text())
+                    "Coinglass request made for {url}".format(url=url)
+                )
+                return (symbol, await _coinglass_unpack(response, symbol))
             else:
                 logging.getLogger(__name__).error(
                     "request to {url} returned code {code}".format(
