@@ -24,6 +24,19 @@ class CoinglassOperation(str, Enum):
     open_interest = "open_interest"
 
 
+async def coingecko_requests(prefix: str, keys: list):
+    redis = aioredis.from_url(REDIS_URL)
+    responses = await redis.mget([f"{prefix}.{key}" for key in keys])
+    result = []
+    for resp in responses:
+        try:
+            result.extend(loadJSON(resp))
+        except (JSONDecodeError, TypeError):
+            # TODO manage the exception
+            pass
+    return result
+
+
 async def redis_requests(prefix: str, keys: list):
     redis = aioredis.from_url(REDIS_URL)
     responses = await redis.mget([f"{prefix}.{key}" for key in keys])
@@ -64,6 +77,6 @@ async def coinglass(operation: CoinglassOperation, coin: Union[Coins, None] = No
 async def coingecko(page: Union[int, None] = Query(default=None, ge=1, le=6)):
     redis_key_prefix = "coingecko"
     if page is None:
-        return await redis_requests(redis_key_prefix, [*range(1, 7)])
+        return await coingecko_requests(redis_key_prefix, [*range(1, 7)])
     else:
         return await redis_single_request(redis_key_prefix, page)
