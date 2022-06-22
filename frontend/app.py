@@ -26,8 +26,7 @@ class CoinglassOperation(str, Enum):
 
 async def redis_requests(prefix: str, keys: list):
     redis = aioredis.from_url(REDIS_URL)
-    requests = [redis.get(f"{prefix}.{key}") for key in keys]
-    responses = await asyncio.gather(*requests)
+    responses = await redis.mget([f"{prefix}.{key}" for key in keys])
     result = []
     for resp in responses:
         try:
