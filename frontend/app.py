@@ -14,7 +14,7 @@ Coins = Enum("Coins", COINS)
 
 
 class CoinglassOperation(str, Enum):
-    funding_rates_u = "funding_rates_u"
+    #funding_rates_u = "funding_rates_u"
     funding_rates_c = "funding_rates_c"
 
 
@@ -23,6 +23,28 @@ redis = RedisManager(REDIS_URL)
 
 frontend = FastAPI()
 
+@frontend.get("/coinglass/funding_rates_u")
+async def coinglass(coin: Union[Coins, None] = None):
+    def response_editor(json_list: list):
+        result = []
+        for j in json_list:
+            elaborated = {
+                "symbol": j["symbol"],
+            }
+            for exch in j["data"]["dataMap"]:
+                if exch == "Binance":
+                    elaborated["binanceFundingRate"] = data["data"]["dataMap"][exch][-1]
+                elif exch == "Bybit":
+                    elaborated["bybitFundingRate"] = data["data"]["dataMap"][exch][-1]
+                elif exch == "FTX":
+                    elaborated["ftxFundingRate"] = data["data"]["dataMap"][exch][-1]
+            result.append(elaborated)
+        return result
+
+    if coin is None:
+        return await redis.request("funding_rates_u", COINS, response_editor)
+    else:
+        return await redis.request("funding_rates_u", [coin.name], response_editor)
 
 @frontend.get("/coinglass/open_interest")
 async def coinglass(coin: Union[Coins, None] = None):
