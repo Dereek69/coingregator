@@ -33,11 +33,11 @@ async def coinglass(coin: Union[Coins, None] = None):
             }
             for exch in j["data"]["dataMap"]:
                 if exch == "Binance":
-                    elaborated["binanceFundingRate"] = data["data"]["dataMap"][exch][-1]
+                    elaborated["binanceFundingRate"] = j["data"]["dataMap"][exch][-1]
                 elif exch == "Bybit":
-                    elaborated["bybitFundingRate"] = data["data"]["dataMap"][exch][-1]
+                    elaborated["bybitFundingRate"] = j["data"]["dataMap"][exch][-1]
                 elif exch == "FTX":
-                    elaborated["ftxFundingRate"] = data["data"]["dataMap"][exch][-1]
+                    elaborated["ftxFundingRate"] = j["data"]["dataMap"][exch][-1]
             result.append(elaborated)
         return result
 
