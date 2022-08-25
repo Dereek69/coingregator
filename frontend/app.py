@@ -14,7 +14,7 @@ Coins = Enum("Coins", COINS)
 
 
 class CoinglassOperation(str, Enum):
-    #funding_rates_u = "funding_rates_u"
+    funding_rates_u = "funding_rates_u"
     funding_rates_c = "funding_rates_c"
 
 
