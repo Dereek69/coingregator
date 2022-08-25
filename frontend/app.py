@@ -68,9 +68,9 @@ async def coinglass(operation: CoinglassOperation, coin: Union[Coins, None] = No
         return result
 
     if coin is None:
-        return await redis.request("funding_rates_u", COINS, response_editor)
+        return await redis.request(operation.name, COINS, response_editor)
     else:
-        return await redis.request("funding_rates_u", [coin.name], response_editor)
+        return await redis.request(operation.name, [coin.name], response_editor)
         
         
         
