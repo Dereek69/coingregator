@@ -23,29 +23,6 @@ redis = RedisManager(REDIS_URL)
 
 frontend = FastAPI()
 
-@frontend.get("/coinglass/funding_rates_u")
-async def coinglass(coin: Union[Coins, None] = None):
-    def response_editor(json_list: list):
-        result = []
-        for j in json_list:
-            elaborated = {
-                "symbol": j["symbol"],
-            }
-            for exch in j["data"]["dataMap"]:
-                if exch == "Binance":
-                    elaborated["binanceFundingRate"] = j["data"]["dataMap"][exch][-1]
-                elif exch == "Bybit":
-                    elaborated["bybitFundingRate"] = j["data"]["dataMap"][exch][-1]
-                elif exch == "FTX":
-                    elaborated["ftxFundingRate"] = j["data"]["dataMap"][exch][-1]
-            result.append(elaborated)
-        return result
-
-    if coin is None:
-        return await redis.request("funding_rates_u", COINS, response_editor)
-    else:
-        return await redis.request("funding_rates_u", [coin.name], response_editor)
-
 @frontend.get("/coinglass/open_interest")
 async def coinglass(coin: Union[Coins, None] = None):
     def response_editor(json_list: list):
@@ -77,13 +54,35 @@ async def coinglass(operation: CoinglassOperation, coin: Union[Coins, None] = No
     def response_editor(json_list: list):
         result = []
         for j in json_list:
-            result.append(j)
+            elaborated = {
+                "symbol": j["symbol"],
+            }
+            for exch in j["data"]["dataMap"]:
+                if exch == "Binance":
+                    elaborated["binanceFundingRate"] = j["data"]["dataMap"][exch][-1]
+                elif exch == "Bybit":
+                    elaborated["bybitFundingRate"] = j["data"]["dataMap"][exch][-1]
+                elif exch == "FTX":
+                    elaborated["ftxFundingRate"] = j["data"]["dataMap"][exch][-1]
+            result.append(elaborated)
         return result
 
     if coin is None:
-        return await redis.request(operation.name, COINS, response_editor)
+        return await redis.request("funding_rates_u", COINS, response_editor)
     else:
-        return await redis.request(operation.name, [coin.name], response_editor)
+        return await redis.request("funding_rates_u", [coin.name], response_editor)
+        
+        
+        
+#        result = []
+#        for j in json_list:
+#            result.append(j)
+#        return result
+
+#    if coin is None:
+#        return await redis.request(operation.name, COINS, response_editor)
+#    else:
+#        return await redis.request(operation.name, [coin.name], response_editor)
 
 
 @frontend.get("/coingecko")
