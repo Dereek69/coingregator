@@ -30,6 +30,7 @@ services:
         env_file: .env
         configs:
             - coin_list
+            - ftx_coin_list
         ports:
             - "80:80"
         restart: on-failure
