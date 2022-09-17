@@ -1,0 +1,3 @@
+eth/usd
+link/usd
+chz-perp
