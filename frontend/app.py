@@ -106,18 +106,6 @@ async def coinglass(operation: CoinglassOperation, coin: Union[Coins, None] = No
         return await redis.request(operation.name, COINS, response_editor)
     else:
         return await redis.request(operation.name, [coin.name], response_editor)
-        
-        
-        
-#        result = []
-#        for j in json_list:
-#            result.append(j)
-#        return result
-
-#    if coin is None:
-#        return await redis.request(operation.name, COINS, response_editor)
-#    else:
-#        return await redis.request(operation.name, [coin.name], response_editor)
 
 
 @frontend.get("/coingecko")
