@@ -10,6 +10,7 @@ services:
         env_file: .env
         configs:
             - coin_list
+            - ftx_coin_list
         restart: on-failure
 
     redis:
@@ -39,3 +40,5 @@ secrets:
 configs:
     coin_list:
         file: ${COIN_LIST_FILE:-coin_list.txt}
+    ftx_coin_list:
+        file: ${FTX_COIN_LIST_FILE:-ftx_coin_list.txt}
