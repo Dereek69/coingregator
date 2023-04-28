@@ -21,15 +21,15 @@ with open(SECRET_FILE, "r") as file:
 
 
 COINS_FILE = "/coin_list"
-FTX_FILE = "/ftx_coin_list"
+#FTX_FILE = "/ftx_coin_list"
 
 COINS = []
 with open(COINS_FILE, "r") as file:
     COINS = [f.strip() for f in file.readlines()]
 
-FTX_COINS = []
+"""FTX_COINS = []
 with open(FTX_FILE, "r") as file:
-    FTX_COINS = [f.strip() for f in file.readlines()]
+    FTX_COINS = [f.strip() for f in file.readlines()]"""
 
 
 COINGLASS_DICT = {
@@ -53,10 +53,10 @@ COINGECKO_URL = (
     "&sparkline=false&price_change_percentage=24h%2C7d%2C30d"
 )
 
-FTX_URL = (
+"""FTX_URL = (
     "https://ftx.com/api/markets/{symbol}/candles?resolution=86400"
     "&start_time={starttime}"
-)
+)"""
 
 
 if "REFRESH_RATE" in os.environ:
@@ -95,7 +95,7 @@ async def _coinglass_unpack(response, symbol):
         return body
 
 
-async def _ftx_unpack(response, symbol):
+"""async def _ftx_unpack(response, symbol):
     r = await response.json()
     try:
         return dumpsJSON({"symbol": symbol, "result": r["result"]})
@@ -104,7 +104,7 @@ async def _ftx_unpack(response, symbol):
         logging.getLogger(__name__).error(
             "request for {symbol} returned {body}".format(symbol=symbol, body=body)
         )
-        return body
+        return body"""
 
 
 async def _coinglassRequests(rtype, symbol):
@@ -156,7 +156,7 @@ async def _coingeckoRequests(page):
                 )
 
 
-async def _ftxRequests(symbol, starttime):
+"""async def _ftxRequests(symbol, starttime):
     async with aiohttp.ClientSession() as session:
         url = FTX_URL.format(symbol=symbol, starttime=starttime)
         async with session.get(url) as response:
@@ -177,7 +177,7 @@ async def _ftxRequests(symbol, starttime):
                         " received a status"
                         " code {code}"
                     ).format(symbol=symbol, code=response.status)
-                )
+                )"""
 
 
 async def _coinglass_runner(rtype, redis):
@@ -202,7 +202,7 @@ async def _coingecko_runner(redis):
     redis.mset({f"coingecko.{page}": body for (page, body) in coingecko_results})
 
 
-async def _ftx_runner(redis):
+"""async def _ftx_runner(redis):
     async def inner(requests):
         results = await asyncio.gather(*requests)
         redis.mset({f"ftx.{coin}": body for (coin, body) in results})
@@ -216,12 +216,12 @@ async def _ftx_runner(redis):
         for x in range(0, len(FTX_COINS), CONCURRENT_REQUESTS)
     ]:
         await inner([_ftxRequests(coin, unix_time) for coin in coin_set])
-        await asyncio.sleep(INTER_REQUEST_TIME)
+        await asyncio.sleep(INTER_REQUEST_TIME)"""
 
 
 def main(r):
-    asyncio.run(_ftx_runner(r))
-    logging.getLogger(__name__).info("Finished the set of ftx requests")
+    #asyncio.run(_ftx_runner(r))
+    #logging.getLogger(__name__).info("Finished the set of ftx requests")
 
     asyncio.run(_coingecko_runner(r))
     logging.getLogger(__name__).info("Finished the set of coingecko requests")
