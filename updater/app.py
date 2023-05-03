@@ -150,7 +150,7 @@ async def _coinglass_runner(rtype, redis):
 
 async def _coingecko_runner(redis):
     coingecko_results = await asyncio.gather(
-        *[_coingeckoRequests(p) for p in range(1, 7)]
+        *[_coingeckoRequests(p) for p in range(1, 50)]
     )
     redis.mset({f"coingecko.{page}": body for (page, body) in coingecko_results})
 
