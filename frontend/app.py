@@ -80,6 +80,6 @@ async def coingecko(page: Union[int, None] = Query(default=None, ge=1, le=6)):
         return result
 
     if page is None:
-        return await redis.request(redis_key_prefix, [*range(1, 40)], response_editor)
+        return await redis.request(redis_key_prefix, [*range(1, 7)], response_editor)
     else:
         return await redis.request(redis_key_prefix, [page], response_editor)
