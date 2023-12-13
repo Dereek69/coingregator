@@ -118,6 +118,7 @@ async def _coingeckoRequests(page):
                 logging.getLogger(__name__).info(
                     "Coingecko request made for {url}".format(url=url)
                 )
+                await asyncio.sleep(INTER_REQUEST_TIME)
                 return (page, await response.text())
             else:
                 logging.getLogger(__name__).error(
