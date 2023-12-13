@@ -126,6 +126,7 @@ async def _coingeckoRequests(page):
                         url=url, code=response.status
                     )
                 )
+                await asyncio.sleep(INTER_REQUEST_TIME)
                 raise Exception(
                     (
                         "the request for page {page}"
