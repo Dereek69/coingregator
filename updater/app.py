@@ -14,7 +14,6 @@ from logging import StreamHandler
 import sys
 from json import dumps as dumpsJSON
 
-
 SECRET_FILE = "/run/secrets/keys"
 with open(SECRET_FILE, "r") as file:
     SECRET = file.readline().strip()
@@ -66,6 +65,11 @@ if "INTER_REQUEST_TIME" in os.environ:
 else:
     INTER_REQUEST_TIME = 3
 
+if "INTER_REQUEST_TIME_CG" in os.environ:
+    INTER_REQUEST_TIME_CG = int(os.environ["INTER_REQUEST_TIME"])
+else:
+    INTER_REQUEST_TIME_CG = 5
+
 
 async def get_starttime_unix():
     time_ago = datetime.datetime.now() - datetime.timedelta(days=30)
@@ -113,12 +117,13 @@ async def _coinglassRequests(rtype, symbol):
 async def _coingeckoRequests(page):
     async with aiohttp.ClientSession() as session:
         url = COINGECKO_URL.format(page=page)
+        print("Requesting page {page}".format(page=page))
         async with session.get(url) as response:
             if response.status == 200:
                 logging.getLogger(__name__).info(
                     "Coingecko request made for {url}".format(url=url)
                 )
-                await asyncio.sleep(INTER_REQUEST_TIME)
+                await asyncio.sleep(INTER_REQUEST_TIME_CG)
                 return (page, await response.text())
             else:
                 logging.getLogger(__name__).error(
@@ -126,7 +131,8 @@ async def _coingeckoRequests(page):
                         url=url, code=response.status
                     )
                 )
-                await asyncio.sleep(INTER_REQUEST_TIME)
+                print("request to {url} returned code {code}".format(url=url, code=response.status))
+                await asyncio.sleep(INTER_REQUEST_TIME_CG)
                 raise Exception(
                     (
                         "the request for page {page}"
