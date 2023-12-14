@@ -68,7 +68,7 @@ else:
 if "INTER_REQUEST_TIME_CG" in os.environ:
     INTER_REQUEST_TIME_CG = int(os.environ["INTER_REQUEST_TIME"])
 else:
-    INTER_REQUEST_TIME_CG = 5
+    INTER_REQUEST_TIME_CG = 30
 
 
 async def get_starttime_unix():
